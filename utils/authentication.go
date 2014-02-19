@@ -27,10 +27,15 @@ func GetCurrentUser(r *http.Request) *models.User {
 
 	session, _ := GetCookieStore(r).Get(r, "sirsid")
 
-	if session.Values["username"] == nil || session.Values["password"] == nil {
+	username := session.Values["username"]
+	if username == nil || username == "" {
 		return nil
 	}
-	err, current_user := models.AuthenticateUser(session.Values["username"].(string), session.Values["password"].(string))
+	password := session.Values["password"]
+	if password == nil || password == "" {
+		return nil
+	}
+	err, current_user := models.AuthenticateUser(username.(string), password.(string))
 
 	if err != nil {
 		return nil
